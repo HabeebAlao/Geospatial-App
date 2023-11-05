@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% leaflet_js %}
+{% leaflet_css %}
+{% block title %}Home{% endblock title %}
+
+
+{% block content %}
+    <Head>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+              crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                crossorigin=""></script>
+    </Head>
+    <style>
+        div.main-body {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #map {
+            width: 100%;
+            display: flex;
+            min-height: 800px;
+            border-radius: 18px;
+            border: 5px solid #C79471;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        }
+
+        #map2 {
+            width: 100%;
+            display: flex;
+            min-height: 400px;
+            border-radius: 18px;
+            border: 5px solid #C79471;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            padding: 0 30px;
+            max-width: 1424px;
+            gap: 50px;
+            width: 100%;
+        }
+
+        .head-top {
+            display: flex;
+            flex-direction: row;
+            padding: 0 30px;
+            max-width: 1424px;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .inner-container {
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        .main-text {
+            align-self: flex-start;
+            color: #D9D9D9;
+            font-size: 46px;
+            font-style: normal;
+            font-weight: 800;
+            line-height: normal;
+        }
+
+        .main-text-2 {
+            align-self: flex-start;
+            margin-left: 0px;
+            color: #D9D9D9;
+            font-size: 46px;
+            font-style: normal;
+            font-weight: 800;
+            line-height: normal;
+        }
+
+
+        .left-box {
+            width: 40%;
+        }
+
+        .right-box {
+            width: 60%;
+
+        }
+
+        .scroll-container {
+            max-height: 800px;
+            overflow: scroll;
+        }
+
+        .top-events, .scroll-container {
+            gap: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sub-header {
+            color: #C79471;
+            font-size: 30px !important;
+        }
+
+        .event-card {
+
+            min-height: 175px;
+            border-radius: 18px;
+            border: 3px solid #C79471;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+            background: #D9D9D9;
+            transition: all 0.3s ease;
+            padding: 18px;
+        }
+
+        .event-card:hover {
+            border: 5px solid #C79471;
+            min-height: 200px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .main-form {
+            width: 100%;
+
+            background-color: #C79471;
+            padding: 20px;
+            border-radius: 18px;
+        }
+
+        .btn {
+            background-color: #f3f7fe;
+            color: #C79471;
+            border: none;
+            border-radius: 8px;
+            width: 100px;
+            height: 45px;
+            transition: .3s;
+        }
+
+        .btn:hover {
+            background-color: #C79471;
+            box-shadow: 0 0 0 5px #d4b8a8;
+            color: #fff;
+        }
+
+        .hidden-element {
+            display: none;
+        }
+
+        .event-card:hover .hidden-element {
+            display: block;
+        }
+
+        .events-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #saveEditButton {
+            align-self: center;
+            margin-top: 25px;
+        }
+
+
+        @media (max-width: 1024px) {
+
+            #map {
+                width: 100%;
+                min-height: 400px;
+            }
+
+            #map2 {
+                width: 100%;
+                min-height: 400px;
+            }
+
+            .main-container {
+                flex-direction: column-reverse;
+            }
+
+            .main-text {
+                margin-left: 0px;
+                align-self: center;
+                text-align: center;
+            }
+
+
+            .inner-container {
+
+                width: 100%;
+            }
+
+            .main-text {
+                font-size: 40px;
+            }
+
+            .scroll-container {
+                width: 100%;
+                max-height: 500px;
+            }
+
+            .inner-container {
+                width: 100%;
+            }
+
+
+        }
+    </style>
+
+    <div class="main-body">
+
+
+        {% if user.is_authenticated %}
+
+
+            <div class="head-top">
+                <h3 class="main-text sub-header">Create Event </h3>
+                <a class="py-2" style=" color: rgba(243, 89, 69, 0.82);" href="{% url 'logout' %}">Logout</a>
+            </div>
+            <div class="main-container">
+
+                <div class="inner-container left-box">
+
+                    <form method="post" class="form-group main-form">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button class="btn" type="submit">Create</button>
+                    </form>
+                    <h3 class="main-text-2 sub-header">Your Events </h3>
+                    <div class="top-events">
+                        <div class="scroll-container">
+                            {% if events %}
+                                {% for event in events %}
+                                    <div class="event-card events-container justify-content-between">
+                                        <div>
+                                            <p>{{ event }}</p>
+                                            <p>location: {{ event.location }} </p>
+                                            <p>date: {{ event.event_date }}</p>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <button class="btn hidden-element" data-toggle="modal"
+                                                    data-target="#editEventModal">edit
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog"
+                                         aria-labelledby="editEventModalLabel"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editEventModalLabel">Edit
+                                                        Event {{ event.id }}</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="post" action="{% url 'edit_event' %}"
+                                                          class="form-group">
+
+                                                        {% csrf_token %}
+                                                        {{ form|crispy }}
+                                                        <input type="hidden" name="event_id" id="id_event_id"
+                                                               value="{{ event.id }}">
+
+                                                        <div id="map2" style="height: 200px;"></div>
+
+                                                        <button id="saveEditButton" class="btn" type="submit">Save
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn" data-dismiss="modal">Close
+                                                    </button>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div id="empty-card-container"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="inner-container right-box">
+                    <div id="map"></div>
+                </div>
+
+            </div>
+
+        {% else %}
+            <a class="py-2" href="{% url 'login' %}">Log In</a>
+        {% endif %}
+    </div>
+    <script>
+        var map = L.map('map').setView([51.505, -0.09], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var marker;
+
+
+        function handleMarkerDrop(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            $('#id_location').val(lat + ', ' + lng);
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker([lat, lng]).addTo(map);
+        }
+
+        map.on('click', handleMarkerDrop);
+    </script>
+    <script>
+        var map = L.map('map2').setView([51.505, -0.09], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var marker;
+
+
+        function handleMarkerDrop(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            $('#id_location').val(lat + ', ' + lng);
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker([lat, lng]).addTo(map);
+        }
+
+        map.on('click', handleMarkerDrop);
+    </script>
+
+
+{% endblock content %}

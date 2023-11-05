@@ -1,0 +1,12 @@
+.site-header {
+    background-color: rgba(0, 0, 0, .85);
+}
+
+a {
+    color: #999999;
+}
+
+a:hover {
+    color: #e8e8e8;
+
+}

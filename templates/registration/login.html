@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}main map{% endblock title %}
+
+
+{% block content %}
+    <style>
+        div.main-body {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-form {
+            background-color: #C79471;
+            padding: 20px;
+            border-radius: 18px;
+        }
+
+        .btn {
+            background-color: #f3f7fe;
+            color: #C79471;
+            border: none;
+            border-radius: 8px;
+            width: 100px;
+            height: 45px;
+            transition: .3s;
+        }
+
+        .btn:hover {
+            background-color: #C79471;
+            box-shadow: 0 0 0 5px #d4b8a8;
+            color: #fff;
+        }
+
+         .main-text {
+            color: #D9D9D9;
+            font-size: 46px;
+            font-style: normal;
+            font-weight: 800;
+            line-height: normal;
+        }
+
+    </style>
+    <div class="main-body">
+        <h2 class="main-text"> Kantask Login </h2>
+
+        <form method="post" class="form-group main-form">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn" type="submit">Log In</button>
+        </form>
+    </div>
+{% endblock content %}
