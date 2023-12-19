@@ -44,9 +44,73 @@ INSTALLED_APPS = [
     'world.apps.WorldConfig',
     'django.contrib.gis',
     'user_location',
+    'myApiApp',
+    'geopy',
+    'rest_framework',
+    'rest_framework_gis',
     'crispy_forms',
     'crispy_bootstrap4',
     'leaflet',
+    'pwa',
+]
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'geodjango_tutorial', '../templates/serviceworker.js')
+
+PWA_APP_NAME = 'Kantask'
+PWA_APP_DESCRIPTION = "My app description"
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': f'{BASE_DIR}/geodjango_tutorial/static/images/icon-192x192.png',
+        "sizes": "64x64 32x32 24x24 16x16",
+        "type": "image/x-icon"
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': f'{BASE_DIR}/geodjango_tutorial/static/images/icon-192x192.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': f'{BASE_DIR}/geodjango_tutorial/static/images/icon-192x192.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
+PWA_APP_SHORTCUTS = [
+    {
+        'name': 'Shortcut',
+        'url': '/target',
+        'description': 'Shortcut to a page in my application'
+    }
+]
+PWA_APP_SCREENSHOTS = [
+    {
+      'src': '/static/images/icons/splash-750x1334.png',
+      'sizes': '750x1334',
+      "type": "image/png"
+    }
 ]
 
 CRISPY_FAIL_SILENTLY = not DEBUG
@@ -160,7 +224,6 @@ POSTGIS_NAME = os.environ.get('POSTGIS_NAME', 'gis')
 POSTGIS_PASS = os.environ.get('POSTGIS_PASS', 'docker')
 POSTGIS_HOST = os.environ.get('POSTGIS_HOST', 'localhost')
 
-
 if (socket.gethostname() == "localhost") | (socket.gethostname() == "MacBook-Pro-2"):
     DATABASES["default"]["HOST"] = "localhost"
     DATABASES["default"]["PORT"] = POSTGIS_PORT
@@ -174,7 +237,7 @@ else:
 if DEPLOY_SECURE:
     DEBUG = False
     TEMPLATES[0]["OPTIONS"]["debug"] = False
-    ALLOWED_HOSTS = ['.kantask.io', 'localhost',]
+    ALLOWED_HOSTS = ['.kantask.io', 'localhost', ]
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 else:

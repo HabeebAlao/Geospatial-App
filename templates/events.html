@@ -3,7 +3,7 @@
 {% load leaflet_tags %}
 {% leaflet_js %}
 {% leaflet_css %}
-{% block title %}Home{% endblock title %}
+{% block title %}Event | Activities{% endblock title %}
 
 
 {% block content %}
@@ -37,6 +37,7 @@
         .main-container {
             display: flex;
             flex-direction: row;
+            justify-content: space-between;
             padding: 0 30px;
             max-width: 1424px;
             gap: 50px;
@@ -60,7 +61,7 @@
 
 
         .left-box {
-            width: 40%;
+            max-width: 40%;
         }
 
         .right-box {
@@ -84,7 +85,7 @@
             font-size: 30px !important;
         }
 
-        .event-card {
+        .event-card, .activity-card {
             border-radius: 18px;
             min-height: 245px;
             border: 3px solid #C79471;
@@ -94,7 +95,7 @@
             padding: 18px 18px 0px 18px;
         }
 
-        .event-card:hover {
+        .event-card:hover, .activity-card:hover {
             border: 5px solid #C79471;
             min-height: 270px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
@@ -107,6 +108,71 @@
             padding: 0 30px;
             max-width: 1424px;
             justify-content: space-between;
+            width: 100%;
+        }
+
+
+        .tablinks {
+            color: #999999;
+            overflow: visible;
+            background-color: transparent;
+            border-color: transparent;
+            border-width: 2px;
+            border-top: transparent 2px solid;
+            border-right: transparent 2px solid;
+            border-bottom: transparent 2px solid;
+            border-left: transparent 2px solid;
+        }
+
+        .tablinks:hover {
+            color: white;
+            border-radius: 0;
+            overflow: visible;
+            background-color: transparent;
+            border-color: #999999;
+            border-width: 2px;
+            border-top: transparent 2px solid;
+            border-right: transparent 2px solid;
+            border-bottom: white 2px solid;
+            border-left: transparent 2px solid;
+        }
+
+        .active {
+            color: #C79471;
+            border-radius: 0;
+            overflow: visible;
+            background-color: transparent;
+            border-color: #e8e8e8;
+            border-width: 2px;
+            border-top: transparent 2px solid;
+            border-right: transparent 2px solid;
+            border-bottom: white 2px solid;
+            border-left: transparent 2px solid;
+        }
+
+        .active:hover {
+            color: #C79471;
+        }
+
+        .tab {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40%;
+            gap: 10px
+        }
+
+        .tab-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            padding: 10px 0;
+
+
+        }
+
+        #no-events-txt {
+            color: white;
             width: 100%;
         }
 
@@ -126,7 +192,6 @@
                 text-align: center;
             }
 
-
             .inner-container {
 
                 width: 100%;
@@ -138,11 +203,15 @@
 
             .scroll-container {
                 width: 100%;
-                max-height: 500px;
+                max-height: 70vh;
             }
 
             .inner-container {
                 width: 100%;
+            }
+
+            .left-box {
+                max-width: 100%;
             }
         }
     </style>
@@ -153,22 +222,78 @@
             <h3 class="main-text sub-header">All Events </h3>
 
         </div>
+        <div class="tab-container">
+            <div class="tab">
+                <button class="tablinks active" data-tab="eventsTab">Events <img
+                        src="https://static.vecteezy.com/system/resources/previews/011/016/930/original/location-pin-3d-image-for-travel-equipment-location-pin-with-red-color-shade-in-a-3d-effect-gps-location-pin-on-a-transparent-background-free-png.png"
+                        alt="Events icon" style="width: 60px; height: 60px;"></button>
+                <button class="tablinks" data-tab="activitiesTab">Activities <img
+                        src="https://static.vecteezy.com/system/resources/previews/018/749/802/original/3d-blue-map-pointer-pin-generative-ai-png.png"
+                        alt="Activities icon" style="width: 60px; height: 60px;"></button>
+            </div>
+        </div>
+
 
         <div class="main-container">
 
-            <div class="inner-container left-box">
+
+            <div class="inner-container left-box" id="eventsTab">
                 <div class="top-events">
                     <div class="scroll-container">
                         {% if events %}
                             {% for event in events %}
                                 <div class="event-card"
-                                     data-lat="{{ event.location.x }}"
-                                     data-lng="{{ event.location.y }}">
+                                     data-lat="{{ event.location.y }}"
+                                     data-lng="{{ event.location.x }}">
                                     <p>Title: {{ event.event_name }}</p>
                                     <p>Date: {{ event.event_date }}</p>
-                                    <p>Location: {{ event.location }}</p>
+                                    <p>Address: {{ event.address }}</p>
                                     <p>Created By: {{ event.user }}</p>
 
+                                    <p id="going-count-{{ event.id }}">Number of people
+                                        going: {{ event.going_users.count }}</p>
+                                    {% if user.is_authenticated %}
+
+                                        {% if event.is_user_going %}
+                                            <button style="margin-bottom: 12px" class="going-button btn {% if not event.is_user_going %}btn-success{% else %}btn-danger{% endif %}"
+                                                    data-event-id="{{ event.id }}">not going anymore?
+                                            </button>
+                                        {% else %}
+                                            <button  style="margin-bottom: 12px" class="going-button btn {% if not event.is_user_going %}btn-success{% else %}btn-danger{% endif %}"
+                                                    data-event-id="{{ event.id }}">going?
+                                            </button>
+                                        {% endif %}
+
+
+                                    {% else %}
+                                        <p>login to rsvp</p>
+                                        <a href="{% url 'login' %}">Log In</a>
+                                    {% endif %}
+
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div id="empty-card-container">
+                                <p id="no-events-txt">no user created events in {{ county }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="inner-container left-box" id="activitiesTab" style="display: none;">
+                <div class="top-events">
+                    <div class="scroll-container">
+                        {% if activities %}
+                            {% for activity in activities.results %}
+                                <div class="activity-card"
+                                     data-lat="{{ activity.geo.latitude }}"
+                                     data-lng="{{ activity.geo.longitude }}">
+                                    <p>{{ activity.name }}</p>
+                                    <p>
+                                        Address: {{ activity.address.addressLocality }}, {{ activity.address.addressRegion }}, {{ activity.address.addressCountry }}</p>
+                                    <p>Telephone: {{ activity.telephone }}</p>
+                                    <a href="{{ activity.url }}" target="_blank">Visit Website</a>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -177,33 +302,48 @@
                     </div>
                 </div>
             </div>
+
+
             <div class="inner-container right-box">
                 <div id="map"></div>
             </div>
 
-        </div>
 
+        </div>
         {% if user.is_authenticated %}
             Hi {{ user.username }}!
         {% else %}
             <p>You are not logged in</p>
             <a href="{% url 'login' %}">Log In</a>
         {% endif %}
+
     </div>
     <script>
 
-        var map = L.map('map').setView([51.505, -0.09], 13);
+        var map = L.map('map').setView([53.349805, -6.26031], 8);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
-        $('.event-card').each(function () {
+        $('.event-card, .activity-card').each(function () {
             var lat = $(this).data('lat');
             var lng = $(this).data('lng');
             var title = $(this).find('p:first-child').text();
 
-            var marker = L.marker([lat, lng]).addTo(map);
+
+            var iconUrl = $(this).hasClass('event-card')
+                ? 'https://static.vecteezy.com/system/resources/previews/011/016/930/original/location-pin-3d-image-for-travel-equipment-location-pin-with-red-color-shade-in-a-3d-effect-gps-location-pin-on-a-transparent-background-free-png.png'
+                : 'https://static.vecteezy.com/system/resources/previews/018/749/802/original/3d-blue-map-pointer-pin-generative-ai-png.png';
+
+            var iconOptions = {
+                iconUrl: iconUrl,
+                iconSize: [36, 36],
+                iconAnchor: [26, 26],
+                popupAnchor: [0, -10],
+            };
+
+            var marker = L.marker([lat, lng], {icon: L.icon(iconOptions)}).addTo(map);
 
 
             var popup = L.popup().setContent(title);
@@ -211,13 +351,72 @@
 
             $(this).on('mouseover', function () {
                 marker.openPopup();
-                map.setView([lat, lng], 13);
+                map.setView([lat, lng], 11);
             });
 
             $(this).on('mouseout', function () {
                 map.closePopup(popup);
             });
         });
+
+        $('.tablinks').on('click', function () {
+            const tab = $(this).data('tab')
+
+            if (tab === "eventsTab") {
+                $('#activitiesTab').hide();
+                $('.tablinks').eq(0).addClass("active");
+                $('.tablinks').eq(1).removeClass("active");
+                $('#eventsTab').show()
+            } else {
+                $('#activitiesTab').show();
+                $('.tablinks').eq(1).addClass("active");
+                $('.tablinks').eq(0).removeClass("active");
+                $('#eventsTab').hide()
+            }
+
+            console.log(tab);
+        });
+
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("inner-container");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            document.getElementById(tabName).style.display = "flex";
+        }
+
+
+        $(document).ready(function () {
+            $('.going-button').on('click', function () {
+                var eventId = $(this).data('event-id');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/update_going/',
+                    data: {
+                        'going': true,
+                        'event_id': eventId,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        $('#going-count-' + eventId).text('Number of people going: ' + data.going_count);
+                        var $button = $('.going-button[data-event-id="' + eventId + '"]');
+
+                        $button.toggleClass('btn-success btn-danger');
+
+                        if ($button.hasClass("btn-danger")) {
+                            $button.text("not going anymore?")
+                        } else {
+                            $button.text("going?")
+                        }
+
+                    }
+                });
+            });
+        });
+
 
     </script>
 {% endblock content %}
