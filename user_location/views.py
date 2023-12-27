@@ -17,8 +17,6 @@ from django.core.cache import cache
 geolocator = Nominatim(user_agent="location")
 
 
-# Define the index view function
-@cache_page(60 * 15)  # Cache the view for 15 minutes
 def index(request):
     # Retrieve the latest 3 events or use default test events if none exist
     events_list = Event.objects.all()[:3]
@@ -113,7 +111,7 @@ def profile(request):
             # Geocode the location and create a new event if successful
             geocoded_location = geolocator.geocode(form.cleaned_data['location'])
             if geocoded_location:
-                point = Point(geocoded_location.latitude, geocoded_location.longitude)
+                point = Point(geocoded_location.longitude, geocoded_location.latitude)
                 print(point)
                 event = Event(
                     user=current_user,
