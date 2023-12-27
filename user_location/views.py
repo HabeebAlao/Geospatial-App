@@ -113,7 +113,8 @@ def profile(request):
             # Geocode the location and create a new event if successful
             geocoded_location = geolocator.geocode(form.cleaned_data['location'])
             if geocoded_location:
-                point = Point(geocoded_location.longitude, geocoded_location.latitude)
+                point = Point(geocoded_location.latitude, geocoded_location.longitude)
+                print(point)
                 event = Event(
                     user=current_user,
                     event_name=form.cleaned_data['event_name'],
@@ -177,7 +178,7 @@ def edit_event(request):
                 geocoded_val = geolocator.geocode(location_str)
 
                 if geocoded_val:
-                    point = Point(geocoded_val.latitude, geocoded_val.longitude)
+                    point = Point(geocoded_val.longitude, geocoded_val.latitude)
 
                     event, created = Event.objects.get_or_create(id=event_id)
                     event.event_name = event_name
