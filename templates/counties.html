@@ -157,9 +157,7 @@
 
         <div class="head-top">
             <h3 class="main-text sub-header">Select a County </h3>
-            <!--<p id="user-location-info" class="secondary-text">Your Location: <span id="user-location-name"
-                                                                                   class="tertiary-text">Loading...</span>
-            </p> -->
+
             <p id="user-county-info" class="secondary-text">Your Location: <span id="user-county-name"
                                                                                  class="tertiary-text">Loading...</span>
             </p>
@@ -203,40 +201,33 @@
         var map;
         let userCountyName = null;
 
-
-        // Function to handle the map initialization
         function initializeMap(userLocation) {
+            // Use the user's location if available, otherwise, default to Dublin
+            var defaultLocation = userLocation || [53.349805, -6.26031];
 
-            // If the user's location is available, use it; otherwise, use Dublin
-            var defaultLocation = userLocation ? userLocation : [53.349805, -6.26031];
-
-
+            // Create Leaflet map with specified options and tile layer
             map = L.map('map').setView(defaultLocation, 8);
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
+            // Loop through county data to add GeoJSON layers to the map
             {% for county in county_data %}
                 var countyGeoJSON = {{ county.geometry|safe }};
-                var countyLayer = L.geoJSON(countyGeoJSON).addTo(map).bindPopup("County: {{ county.name }}");
-
-
-
-                countyLayer.setStyle({fillColor: '#C79471', fillOpacity: 0.5});
-
+                var countyLayer = L.geoJSON(countyGeoJSON, {
+                    style: {fillColor: '#C79471', fillOpacity: 0.5}
+                }).addTo(map).bindPopup("County: {{ county.name }}");
             {% endfor %}
 
-            // Add markers as before
-            // Add markers as before
+            // Loop through event cards to create markers and popups
             $('.event-card').each(function () {
                 var lat = $(this).data('lat');
                 var lng = $(this).data('lng');
                 var title = $(this).find('p:first-child').text();
 
+                // Determine marker icon URL based on user location
                 var isUserLocation = $(this).hasClass('user-location');
-
-                // Use a different icon URL for user location and other markers
                 var iconUrl = isUserLocation
                     ? 'https://static.vecteezy.com/system/resources/previews/023/554/762/original/red-map-pointer-icon-on-a-transparent-background-free-png.png'
                     : 'https://www.pngall.com/wp-content/uploads/2017/05/Map-Marker-Free-Download-PNG.png';
@@ -253,6 +244,7 @@
                 var popup = L.popup().setContent(title);
                 marker.bindPopup(popup);
 
+                // Add mouseover, mouseout, and click events to interact with markers
                 $(this).on('mouseover', function () {
                     marker.openPopup();
                     map.setView([lat, lng], 8);
@@ -265,15 +257,13 @@
                 $(this).on('click', function () {
                     marker.openPopup();
                     map.setView([lat, lng], 8);
-
                     console.log(title);
                     window.location.href = window.location.href + title;
                 });
             });
-
         }
 
-        // Function to fetch the county name using Nominatim API
+        // Fetch the county name using Nominatim API
         function fetchCountyName(userLocation) {
             var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${userLocation[0]}&lon=${userLocation[1]}`;
 
@@ -282,7 +272,6 @@
                 .then(data => {
                     var countyName = data.address.county;
                     userCountyName = countyName;
-
                     $('#user-county-name').text(countyName || 'County not available');
                 })
                 .catch(error => {
@@ -291,8 +280,7 @@
                 });
         }
 
-        // Function to handle the user's location
-        // Function to handle the user's location
+        // Handle the user's location, initialize the map, and fetch county name
         function getUserLocation() {
             if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition(
@@ -300,7 +288,7 @@
                         var userLocation = [position.coords.latitude, position.coords.longitude];
                         initializeMap(userLocation);
 
-                        // Update the content of the user location info
+                        // Update user location info
                         $('#user-location-name').text('Latitude: ' + position.coords.latitude + ', Longitude: ' + position.coords.longitude);
 
                         // Fetch county name using Nominatim API
@@ -309,30 +297,20 @@
                     function (error) {
                         console.error('Error getting user location:', error);
                         initializeMap(null);  // Use Dublin as default
-
-                        // Update the content of the user location info
-                        $('#user-location-name').text('Location not available');
-                        $('#user-county-name').text('County not available');
+                        $('#user-location-name, #user-county-name').text('Location not available');
                     }
                 );
             } else {
                 console.error('Geolocation is not supported by this browser.');
                 initializeMap(null);  // Use Dublin as default
-
-                // Update the content of the user location info
-                $('#user-location-name').text('Location not available');
-                $('#user-county-name').text('County not available');
+                $('#user-location-name, #user-county-name').text('Location not available');
             }
         }
-
 
         // Call the function to get the user's location and initialize the map
         getUserLocation();
 
-
     </script>
-
-
 
 
 {% endblock content %}

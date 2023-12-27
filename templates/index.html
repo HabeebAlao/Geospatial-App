@@ -110,7 +110,7 @@
             display: block;
             overflow: hidden;
             max-height: 3em;
-            white-space:pre-line;
+            white-space: pre-line;
             text-overflow: ellipsis;
         }
 
@@ -268,24 +268,30 @@
     </div>
     <script>
 
+        // Create a Leaflet map centered at coordinates [51.505, -0.09] with zoom level 13
         var map = L.map('map').setView([51.505, -0.09], 13);
+
+        // Add OpenStreetMap tile layer to the map with specified options
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
+        // Iterate over elements with class 'card-image' to create markers and popups
         $('.card-image').each(function () {
+            // Extract latitude, longitude, and title information from data attributes and child elements
             var lat = $(this).data('lat');
             var lng = $(this).data('lng');
             var title = $(this).find('p:first-child').text();
 
+            // Create a marker at the specified coordinates and add it to the map
             var marker = L.marker([lat, lng]).addTo(map);
 
-            $(this).siblings().text()
-
+            // Create a popup with the extracted title and bind it to the marker
             var popup = L.popup().setContent(title);
             marker.bindPopup(popup);
 
+            // Add mouseover event to show a customized popup and adjust the map view
             $(this).on('mouseover', function () {
                 marker.bindPopup("This event is at: " + $(this).siblings(".heading").text()).openPopup();
                 marker.openPopup();
@@ -293,6 +299,7 @@
                 map.setView([lat, lng], 13);
             });
 
+            // Add mouseout event to close the popup
             $(this).on('mouseout', function () {
                 map.closePopup(popup);
             });

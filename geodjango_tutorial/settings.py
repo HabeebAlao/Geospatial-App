@@ -62,9 +62,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'geodjango_tutorial', '../templates/serviceworker.js')
 
@@ -79,20 +77,20 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
-        'src': f'{BASE_DIR}/geodjango_tutorial/static/images/icon-192x192.png',
+        'src': f'/static/images/icon-192x192.png',
         "sizes": "64x64 32x32 24x24 16x16",
         "type": "image/x-icon"
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': f'{BASE_DIR}/geodjango_tutorial/static/images/icon-192x192.png',
+        'src': f'/static/images/icon-192x192.png',
         'sizes': '160x160'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': f'{BASE_DIR}/geodjango_tutorial/static/images/icon-192x192.png',
+        'src': f'/static/images/icon-192x192.png',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
@@ -107,9 +105,9 @@ PWA_APP_SHORTCUTS = [
 ]
 PWA_APP_SCREENSHOTS = [
     {
-      'src': '/static/images/icons/splash-750x1334.png',
-      'sizes': '750x1334',
-      "type": "image/png"
+        'src': '/static/images/icons/splash-750x1334.png',
+        'sizes': '750x1334',
+        "type": "image/png"
     }
 ]
 

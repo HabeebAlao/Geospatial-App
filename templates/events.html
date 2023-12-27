@@ -255,11 +255,13 @@
                                     {% if user.is_authenticated %}
 
                                         {% if event.is_user_going %}
-                                            <button style="margin-bottom: 12px" class="going-button btn {% if not event.is_user_going %}btn-success{% else %}btn-danger{% endif %}"
+                                            <button style="margin-bottom: 12px"
+                                                    class="going-button btn {% if not event.is_user_going %}btn-success{% else %}btn-danger{% endif %}"
                                                     data-event-id="{{ event.id }}">not going anymore?
                                             </button>
                                         {% else %}
-                                            <button  style="margin-bottom: 12px" class="going-button btn {% if not event.is_user_going %}btn-success{% else %}btn-danger{% endif %}"
+                                            <button style="margin-bottom: 12px"
+                                                    class="going-button btn {% if not event.is_user_going %}btn-success{% else %}btn-danger{% endif %}"
                                                     data-event-id="{{ event.id }}">going?
                                             </button>
                                         {% endif %}
@@ -319,19 +321,20 @@
 
     </div>
     <script>
-
+        // Create Leaflet map with default view and tile layer
         var map = L.map('map').setView([53.349805, -6.26031], 8);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
+        // Iterate through event cards and activity cards
         $('.event-card, .activity-card').each(function () {
             var lat = $(this).data('lat');
             var lng = $(this).data('lng');
             var title = $(this).find('p:first-child').text();
 
-
+            // Determine marker icon URL based on card type
             var iconUrl = $(this).hasClass('event-card')
                 ? 'https://static.vecteezy.com/system/resources/previews/011/016/930/original/location-pin-3d-image-for-travel-equipment-location-pin-with-red-color-shade-in-a-3d-effect-gps-location-pin-on-a-transparent-background-free-png.png'
                 : 'https://static.vecteezy.com/system/resources/previews/018/749/802/original/3d-blue-map-pointer-pin-generative-ai-png.png';
@@ -343,12 +346,14 @@
                 popupAnchor: [0, -10],
             };
 
+            // Create marker with specified options and add to the map
             var marker = L.marker([lat, lng], {icon: L.icon(iconOptions)}).addTo(map);
 
-
+            // Create popup and bind it to the marker
             var popup = L.popup().setContent(title);
             marker.bindPopup(popup);
 
+            // Add mouseover and mouseout events to interact with markers
             $(this).on('mouseover', function () {
                 marker.openPopup();
                 map.setView([lat, lng], 11);
@@ -359,25 +364,25 @@
             });
         });
 
+        // Handle tab clicks to show/hide tab content
         $('.tablinks').on('click', function () {
-            const tab = $(this).data('tab')
+            const tab = $(this).data('tab');
 
+            // Show/hide tabs based on the clicked tab
             if (tab === "eventsTab") {
                 $('#activitiesTab').hide();
                 $('.tablinks').eq(0).addClass("active");
                 $('.tablinks').eq(1).removeClass("active");
-                $('#eventsTab').show()
+                $('#eventsTab').show();
             } else {
                 $('#activitiesTab').show();
                 $('.tablinks').eq(1).addClass("active");
                 $('.tablinks').eq(0).removeClass("active");
-                $('#eventsTab').hide()
+                $('#eventsTab').hide();
             }
-
-            console.log(tab);
         });
 
-
+        // Function to open specific tab by name
         function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("inner-container");
@@ -387,11 +392,13 @@
             document.getElementById(tabName).style.display = "flex";
         }
 
-
+        // Execute code when the document is ready
         $(document).ready(function () {
+            // Handle 'going' button click with AJAX request
             $('.going-button').on('click', function () {
                 var eventId = $(this).data('event-id');
 
+                // Send AJAX request to update 'going' status
                 $.ajax({
                     type: 'POST',
                     url: '/update_going/',
@@ -401,9 +408,11 @@
                         csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     success: function (data) {
+                        // Update the displayed going count
                         $('#going-count-' + eventId).text('Number of people going: ' + data.going_count);
-                        var $button = $('.going-button[data-event-id="' + eventId + '"]');
 
+                        // Toggle button class and text based on 'going' status
+                        var $button = $('.going-button[data-event-id="' + eventId + '"]');
                         $button.toggleClass('btn-success btn-danger');
 
                         if ($button.hasClass("btn-danger")) {
@@ -411,12 +420,11 @@
                         } else {
                             $button.text("going?")
                         }
-
                     }
                 });
             });
         });
-
-
     </script>
+
+
 {% endblock content %}
