@@ -99,6 +99,6 @@ http://localhost:25432/
 
 | Layer | Technologies |
 |-----------------------|--------------------------|
-| Frontend | HTML 5, django, CSS, bootstrap4, django-leaflet, ipykernel, psycopg2, gdal, pyproj |
+| Frontend | HTML 5, django, CSS, JavaScript, bootstrap4, django-leaflet, ipykernel, psycopg2, gdal, pyproj |
 | Middle Tier | django, python(3.11), Docker|
 | Persistence Tier | postgres, postgis |
